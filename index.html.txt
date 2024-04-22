@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Pilotos e Pneus</title>
+  
+  <script src="https://kit.fontawesome.com/e5ce832915.js" crossorigin="anonymous"></script>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro de Pilotos</h1>
+    <form id="pilotoForm">
+      <div class="form-group">
+        <label for="nome">Nome do Piloto</label>
+        <input type="text" class="form-control" id="nome" placeholder="Digite o nome do piloto">
+      </div>
+      <div class="form-group">
+        <label for="numeroKart">Número do Kart</label>
+        <input type="text" class="form-control" id="numeroKart" placeholder="Digite o número do kart">
+      </div>
+      <div class="form-group">
+        <label for="dataEtapa">Data da Etapa</label>
+        <input type="date" class="form-control" id="dataEtapa">
+      </div>
+      <button type="submit" class="btn btn-primary">Cadastrar Piloto</button>
+    </form>
+
+    <h1>Cadastro de Pneus</h1>
+    <form id="pneuForm">
+      <div class="form-group">
+        <label for="codigoBarra">Código de Barras</label>
+        <input type="text" class="form-control" id="codigoBarra" placeholder="Digite o código de barras do pneu">
+      </div>
+      <!-- Adicionando a funcionalidade de leitura da câmera -->
+      <video id="video" width="300" height="200" autoplay></video>
+      <button id="captureButton" class="btn btn-primary">Capturar Código de Barras</button>
+    </form>
+
+    <div id="pilotoInfo"></div>
+    <div id="pneuInfo"></div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    // Solicitação de login com senha
+    var usuario = prompt("Digite seu usuário:");
+    var senha = prompt("Digite sua senha:");
+
+    // Verificação de usuário e senha
+    if (usuario === "admin" && senha === "admin123") {
+      // Permissões concedidas
+      document.getElementById('pilotoForm').style.display = 'block';
+      document.getElementById('pneuForm').style.display = 'block';
+    } else {
+      alert("Usuário ou senha incorretos. Acesso negado.");
+    }
+
+    // Código JavaScript para capturar os dados dos formulários e armazená-los
+    document.getElementById('pilotoForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      var nome = document.getElementById('nome').value;
+      var numeroKart = document.getElementById('numeroKart').value;
+      var dataEtapa = document.getElementById('dataEtapa').value;
+      localStorage.setItem('piloto', JSON.stringify({ nome: nome, numeroKart: numeroKart, dataEtapa: dataEtapa }));
+      document.getElementById('pilotoInfo').innerHTML = '<p>Nome do Piloto: ' + nome + '<br>Número do Kart: ' + numeroKart + '<br>Data da Etapa: ' + dataEtapa + '</p>';
+    });
+
+    document.getElementById('pneuForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      // Adicionando a captura do código de barras pela câmera
+      var video = document.getElementById('video');
+      var captureButton = document.getElementById('captureButton');
+
+      // Usar getUserMedia para capturar a câmera
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+          video.srcObject = stream;
+          captureButton.addEventListener('click', function() {
+            // Capturar a imagem do vídeo usando um canvas
+            var canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            var context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Decodificar o código de barras do canvas
+            // Aqui você precisaria usar uma biblioteca para decodificar o código de barras
+            // Por exemplo, QuaggaJS é uma biblioteca popular para decodificar códigos de barras
+            // Mas você precisará importar e configurar isso adequadamente
+            // Depois de decodificar o código de barras, você pode prosseguir com o armazenamento e exibição, similar ao exemplo do formulário de piloto
+          });
+        })
+        .catch(function(error) {
+          console.error('Erro ao acessar a câmera: ', error);
+        });
+    });
+  </script>
+</body>
+</html>
